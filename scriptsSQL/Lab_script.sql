@@ -74,4 +74,62 @@ DROP TABLE temp_homic
 SELECT * FROM geometry_columns;
 SELECT * FROM spatial_ref_sys WHERE srid = 26918;
 SELECT proj4text FROM spatial_ref_sys WHERE srid = 26918;
-SELECT ST_SRID(geom) FROM nyc_streets LIMIT 1;
+
+-- Project NYC Streets Table
+SELECT ST_SRID(geom) FROM nyc_streets LIMIT 1;  -- Check SRID
+SELECT UpdateGeometrySRID('nyc_streets', 'geom', 26918);
+	-- Basically a compact ALTER TABLE statement
+SELECT ST_SRID(geom) FROM nyc_streets LIMIT 1;  -- Check again, should change
+
+-- Spatial Joins: Population Density in Upper East and West Sides
+SELECT    b.name, 
+	  Sum(a.popn_total) / (ST_Area(b.geom) / 1000000.0) AS pop_per_km2
+FROM 	  nyc_census_blocks AS a
+JOIN 	  nyc_neighborhoods AS b
+  ON 	  ST_Intersects(a.geom, b.geom)
+WHERE	  b.name like 'Upper West Side' OR b.name like 'Upper East Side'
+GROUP BY  b.name, b.geom
+	-- Two spatial functions (Area and Intersects)
+	--Note the Time: 113ms
+
+/** SIDENOTE **/	
+-- Indexing and Vacuuming: Efficiency in PostgreSQL
+DROP INDEX nyc_census_blocks_geom_idx --Already Exists
+CREATE INDEX nyc_census_blocks_geom_idx  --Name of Index
+  ON nyc_census_blocks  -- Table to Index
+  USING GIST (geom); -- Generic Index Structure
+
+	-- Test Compute Time: Note how many ms it takes to execute query
+	SELECT    b.name, 
+		  Sum(a.popn_total) / (ST_Area(b.geom) / 1000000.0) AS pop_per_km2
+	FROM 	  nyc_census_blocks AS a
+	JOIN 	  nyc_neighborhoods AS b
+	  ON 	  ST_Intersects(a.geom, b.geom)
+	WHERE	  b.name like 'Upper West Side' OR b.name like 'Upper East Side'
+	GROUP BY  b.name, b.geom
+		-- w/out Index: 485ms
+		-- w/ Index: 85ms
+
+-- Vacuuming also improves efficiency
+VACUUM ANALYZE nyc_census_blocks
+	-- Return freed space after creating index, running updates or deletes, ect
+/** Back to GIS **/
+
+-- Length of Lines
+SELECT type, Sum(ST_Length(geom)) AS length
+FROM nyc_streets
+GROUP BY type
+ORDER BY length DESC;
+
+-- K Nearest Neighbor: Closest Streets from Bryant Park Subway (42nd St)
+SELECT
+  a.gid,
+  a.name
+FROM
+  nyc_streets a
+ORDER BY
+  a.geom <->
+  (SELECT geom 
+   FROM nyc_subway_stations 
+   WHERE name like '42nd St' AND alt_name like 'Bryant Park')
+LIMIT 10;
