@@ -37,29 +37,41 @@ FROM 	 nyc_census_blocks
 GROUP BY boroname
 ORDER BY (sum(popn_white) / sum(popn_total)) * 100 asc;
 
--- Crime Stats
-select * from nyc_homicides limit 5;
-
-select 	year,
+-- Homicides per Year
+SELECT 	year,
 	count(*) AS murder_count
-from 	nyc_homicides
-group by year
-order by year desc;
+FROM 	nyc_homicides
+GROUP BY year
+ORDER BY year DESC;
 
-select boroname, count(*) AS murder_count
-from nyc_homicides
-group by boroname;
+-- Avg Murder Rate (2003 - 2011)
+SELECT boroname, sum(popn_total) AS total_pop
+INTO temp_pop
+FROM nyc_census_blocks
+GROUP BY boroname;
 
-select * from nyc_census_blocks limit 5;
+SELECT boroname, count(*) AS murder_ct
+INTO temp_homic
+FROM nyc_homicides
+GROUP BY boroname;
 
-select boroname, sum(popn_total) 
-from nyc_census_blocks
-group by boroname;
+SELECT 	  a.boroname, 
+	  a.total_pop, 
+	  b.murder_ct, 
+	  b.murder_ct / (a.total_pop / 100000) AS avg_murder_rate
+FROM 	  temp_pop AS a
+JOIN 	  temp_homic AS b
+  ON 	  a.boroname = b.boroname
+ORDER BY  b.murder_ct / (a.total_pop / 100000) DESC;
 
-select boroname, count(*)
-from nyc_homicides
-group by boroname;
-----------------
--- Geometries --
-----------------
-select * from geometry_columns;
+DROP TABLE temp_pop
+DROP TABLE temp_homic
+
+------------------------
+-- Geometries and GIS --
+------------------------
+--Projections
+SELECT * FROM geometry_columns;
+SELECT * FROM spatial_ref_sys WHERE srid = 26918;
+SELECT proj4text FROM spatial_ref_sys WHERE srid = 26918;
+SELECT ST_SRID(geom) FROM nyc_streets LIMIT 1;
