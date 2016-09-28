@@ -15,7 +15,7 @@ Retrieve the executables for [PostgreSQL](http://www.enterprisedb.com/products-s
 
 ## Load Shapefiles
 
-## Explore Tables (Normal SQL)
+## Explore Tables (PostgreSQL)
 We can perform traditional 'SELECT' queries to get a sense of the data we imported and what it can tell us.
 
 ## Geometric, GIS-related Queries (PostGIS Functions)
