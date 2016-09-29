@@ -11,6 +11,8 @@ Retrieve the executables for [PostgreSQL](http://www.enterprisedb.com/products-s
 
 ### Mac OS:
 
+Install Mac PostgreSQL
+
 ## Create a New DataBase
 With our new local server, let's create a new Database called `nyc`.
 * Open pgAdmin and log into the localhost server with port 5432.
