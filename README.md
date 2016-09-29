@@ -12,8 +12,14 @@ Retrieve the executables for [PostgreSQL](http://www.enterprisedb.com/products-s
 ### Mac OS:
 
 ## Create a New DataBase
+With our new local server, let's create a new Database called `nyc`.
+* Open pgAdmin and log into the localhost server with port 5432.
+  * Password and username should be postgres
+* Right click on Databases and create a new one.
+  * Name it nyc and set owner to postgres
 
 ## Load Shapefiles
+
 
 ## Explore Tables (PostgreSQL)
 We can perform traditional `SELECT` queries to get a sense of the data we imported and what it can tell us.
