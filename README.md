@@ -1,4 +1,5 @@
 # MSBA Lab: lab-spatialDB-nyc
+
 Please Clone or Download this repo if you want to follow along during the lab session.
 
 This repo is for a class lab designed to introduce spatial database management systems in PostgreSQL, ODBC workflow, and R as a GIS from data wrangling to visualization.
@@ -44,6 +45,7 @@ The great thing about OpeGeo is that they include a Graphical User Interface (GU
 ### shp2pgsql:
 
 If you do not have a GUI file loader, we can load files the old-fashioned way... the trusty command-line.  PostgreSQL's command line is normally called pgsql, but PostGIS extends GIS functions with the shp2pgsql command.  There are two ways to load shapefiles into tables, one command at a time or batch loading.  This is tricky to lay out here because each system may vary with database names, passwords, port numbers, ect.  I will write the code with the following assumptions, but be prepared to adjust if need be:
+
 * `<DBNAME>` is "nyc"
 * `<DBTABLE>` is the name of the shapefile minus the extension
 * `<SCHEMA>` is the default "public" one created when you install postgres
@@ -54,7 +56,9 @@ If you do not have a GUI file loader, we can load files the old-fashioned way...
 Reference this guide on PostgreSQL Command-Line Interface for [shp2pgsql](http://suite.opengeo.org/opengeo-docs/dataadmin/pgGettingStarted/shp2pgsql.html) and if you have trouble, consult StackOverflow.
 
 #### Method 1
+
 Check that postgres is responsive or connected:
+
 Syntax: 
 ```
 psql -U postgres -d <DBNAME> -c "SELECT postgis_version()"
@@ -63,8 +67,8 @@ Code:
 ```
 psql -U postgres -d nyc -c "SELECT postgis_version()"
 ```
-
 Good? Let's run the shp2pgsql command
+
 Syntax: 
 ```
 shp2pgsql -I -s <SRID> <PATH/TO/SHAPEFILE> <SCHEMA>.<DBTABLE> | psql -U postgres -d <DBNAME>
@@ -81,6 +85,7 @@ psql -U postgres -d nyc -c "SELECT count(*) FROM nyc_census_blocks"
 You could repeat this 4 or 5 times to create each table individually or we can write a script to load them all at once!
 
 #### Method 2: Batch Loading
+
 If you named your database `nyc` then simply run the following files depending on you're OS.  If not, make the simple edit to the file.
 
 Windows user: run `loadfiles.cmd` (BATCH file) in the data folder.
@@ -89,6 +94,7 @@ MAC user:  run the `loadfiles.sh` (Bash file) in the same folder.
 Take a look at the code as it uses regular expressions, pipe operators, and loops! 
 
 ## Explore Tables (PostgreSQL)
+
 The hard part is out of the way and now we are all prepared to actually dive into the data.  We can perform traditional `SELECT` queries to get a sense of the data we imported and what it can tell us.  pgAdmin is a nice UI to see the structure of PostgreSQL servers and databases.  Opening a SQL Query window is where the majority of scripting will occur.  It's the most advanced editor (no IntelliSense like MS SQL Server) but it has basic code coloring.
 
 ## Geometric, GIS-related Queries (PostGIS Functions)
@@ -108,6 +114,7 @@ Thanks to ODBC and multiple R libraries that facilitate communication with our R
 We want to prepare our data in order to easily plot it using Hadley Whickham's awesome grammar of graphics syntax from `ggplot2`.  That means executing relevent queries from within R, perform multiple steps like fortifying the spatial elements and joining dataframes.  Thanks to the fact that data in an RDBMS is already structured and organized, there are relatively few steps we need to do.  There also is not missing or other issues that generally haunt data scientists.  That is another benefit of pulling from a database populated by pre-processed data.  That is certainly not always the case.
 
 ## R and ggplot2 as a GIS
+
 With the right packages, we can turn R into an effective GIS.  That means importing shapefiles, transforming them, and of course mapping them.  Take a look at the `sourcePackages.R` scripts which calls GIS packages.  While PostGIS is by far the best way to organize sptial data and perform spatial manipulations, we can't actually present the data without connecting this back-end to a front-end system.  By front-end, I mean something like QGIS, CartoDB, ArcGIS, or in this case, R.  Keep in mind R is excellent at statistical modeling and packages like `spatstat` allow for powerful spatial statistical modeling as well. 
 
 If you do not have PostgreSQL installed on your computer, you can also directly import shapefiles into R.  While not ideal when dealing with several layers, it is still nice to know that you can import, project, organize, and visualize basic shapefiles within R given the right packages.
