@@ -4,7 +4,7 @@ A class lab designed to introduce spatial database management systems in Postgre
 
 ## Installing PostgreSQL and PostGIS
 
-I suggest downloading the OpenGeo stack distributed by [BoundlessGeo](http://boundlessgeo.com/products/downloads/).  It is completely free but in order to get the download files, you need to fill out a quick form and they should email you.  It makes installation of PostgreSQL, PostGIS, GeoServer and more super easy and hassle free.  Sometimes it takes some time to receive the files, so I will include direct installation of PostgreSQL and PostGIS for Windows and Mac OS.
+I suggest downloading the OpenGeo stack distributed by [BoundlessGeo](http://boundlessgeo.com/products/downloads/).  It is completely free but in order to get the download files, you need to fill out a quick form and they should email you.  It makes installation of PostgreSQL, PostGIS, GeoServer and more super easy and hassle free.  Sometimes it takes some time to receive the files, so I will include direct installation of PostgreSQL and PostGIS for Windows and Mac OS.  If you do not receive an email, go ahead and install postgres directly.
 
 ### Windows:
 
@@ -13,7 +13,9 @@ I suggest downloading the OpenGeo stack distributed by [BoundlessGeo](http://bou
 * After installing it on your system, launch Application Stack Builder
   * Start -> Programs -> PostGreSQL 9.6 -> Application Stack Builder
   * Under Spatial Extensions, select the most recent PostGIS extension
-* At this point, you should have a local postgres server on port 5432 and postGIS.
+* Make note of your server port, password (best to make it "postgres"), user/host name, ect.
+
+If you are having trouble, consult StackOverflow!
 
 ### Mac OS:
 
@@ -28,24 +30,67 @@ With our new local server, let's create a new Database called `nyc`.
   * Password and username should be postgres
 * Right click on Databases and create a new one.
   * Name it nyc and set owner to postgres
+* Open pgAdmin4, log into the server, and open a new SQL window (top tooldbar)
+  * Execute query `CREATE EXTENSION postgis();`
+  * IMPORTANT: Don't skip this step or else any functions that you call from PostGIS will return an error
 
 ## Load Shapefiles
 
-### OpenGeo:
+### OpenGeo's pgShapeLoader:
 
-The great thing about OpeGeo is that they include a Graphical User Interface (GUI) for the shp2pgsql command line interface called [pgShapeLoader or shp2pgsql-gui](http://suite.opengeo.org/opengeo-docs/dataadmin/pgGettingStarted/pgshapeloader.html).  At this point, it is very straightforward uploading your shapefiles from the data file into the database you just created.  Follow this guide if you received the OpenGeo distirbution in a timely manner.
+The great thing about OpeGeo is that they include a Graphical User Interface (GUI) for the shp2pgsql command line interface called [pgShapeLoader or shp2pgsql-gui](http://suite.opengeo.org/opengeo-docs/dataadmin/pgGettingStarted/pgshapeloader.html).  At this point, it is very straightforward uploading your shapefiles from the data file into the database you just created.  Follow this guide if you received the OpenGeo distirbution in a timely manner.  Follow the instruction, but note that the SRID (Spatial Reference ID, or what defined the projection) will be **26918** for this lab.
 
 ### shp2pgsql:
 
-PostGIS Command-Line Interface: [shp2pgsql-gui](http://suite.opengeo.org/opengeo-docs/dataadmin/pgGettingStarted/shp2pgsql.html)
+If you do not have a GUI file loader, we can load files the old-fashioned way... the trusty command-line.  PostgreSQL's command line is normally called pgsql, but PostGIS extends GIS functions to shp2pgsql.  There are two way to load shapefiles into tables, one command at a time or batch loading.  This is tricky to lay out here because each system might as far as database names, passwords, port numbers, ect.  I will write the code with the following assumptions, but prepared to adjust if need be:
+* DBNAME is "nyc"
+* DBTABLE is the name of the shapefile minus the extension
+* SCHEMA is the default "public" one created when you install postgres
+* SRID will **ALWAYS** be defined as 26918 for this lab.
+* PORT # is 5432
+* FILE\PATH.shp **You have to denote you're own file paths where necessary!!**
+
+Reference this guide on PostGIS's Command-Line Interface: [shp2pgsql](http://suite.opengeo.org/opengeo-docs/dataadmin/pgGettingStarted/shp2pgsql.html) and if you have trouble, consult StackOverflow.
+
+#### Method 1
+Check that postgres is responsive or connected:
+Syntax: 
+```
+psql -U postgres -d <DBNAME> -c "SELECT postgis_version()"
+```
+Code: 
+```
+psql -U postgres -d nyc -c "SELECT postgis_version()"
+```
+
+Good? Let's run the shp2pgsql command
+Syntax: 
+```
+shp2pgsql -I -s <SRID> <PATH/TO/SHAPEFILE> <SCHEMA>.<DBTABLE> | psql -U postgres -d <DBNAME>
+```
+Code: 
+```
+shp2pgsql -I -s 26918 C:\Users\yalot\OneDrive\DataProjects\nyc_census_blocks.nyc public.nyc_census_blocks | psql -U postgres -d nyc
+```
+
+You know it completed when the end of the long list of `INSERT` ends with `COMMIT`.  Check by counting the number of rows in a new command:
+```
+psql -U postgres -d nyc -c "SELECT count(*) FROM nyc_census_blocks"
+```
+You could repeat this 4 or 5 times to create each table individually or we can write a script to load them all at once!
+
+#### Method 2: Batch Loading
+If you are a Windows user, you want to edit `loadfiles.cmd` (BATCH file) in the SQLscripts folder.  Save it and then run it.
+A MAC user will want to edit and run the `loadfiles.sh` (Bash file) in the same folder.
+
+Take a look at the code as it uses regular expressions, pipe operators, and loops! 
 
 ## Explore Tables (PostgreSQL)
-
-We can perform traditional `SELECT` queries to get a sense of the data we imported and what it can tell us.
+The hard part is out of the way and now we are all prepared to actually dive into the data.  We can perform traditional `SELECT` queries to get a sense of the data we imported and what it can tell us.  pgAdmin is a nice UI to see the structure of PostgreSQL servers and databases.  Opening a SQL Query window is where the majority of scripting will occur.  It's the most advanced editor (no IntelliSense like MS SQL Server) but it has basic code coloring.
 
 ## Geometric, GIS-related Queries (PostGIS Functions)
 
-Notice the `geom` column in our tables.  This is a metadata column for storing the spatial information for each row.  We can use this to perform spatial joins and geometric functions like area or length calculations.
+Notice the `geom` column in our tables.  This is a metadata column for storing the spatial information for each row.  We can use this to perform spatial joins and geometric functions like area or length calculations.  This is the bread and butter aspect of PostGIS where we can do super simple queries to calculate population densities per square kilometer or advanced techniques like K-Nearest Neighbor or writing geospatial functions from scratch.
 
 ## ODBC with R
 
