@@ -1,6 +1,7 @@
 # MSBA Lab: lab-spatialDB-nyc
+Please Clone or Download this repo if you want to follow along during the lab session.
 
-A class lab designed to introduce spatial database management systems in PostgreSQL, ODBC workflow, and using R as a GIS from data wrangling to visualization.
+This repo is for a class lab designed to introduce spatial database management systems in PostgreSQL, ODBC workflow, and R as a GIS from data wrangling to visualization.
 
 ## Installing PostgreSQL and PostGIS
 
@@ -38,19 +39,19 @@ With our new local server, let's create a new Database called `nyc`.
 
 ### OpenGeo's pgShapeLoader:
 
-The great thing about OpeGeo is that they include a Graphical User Interface (GUI) for the shp2pgsql command line interface called [pgShapeLoader or shp2pgsql-gui](http://suite.opengeo.org/opengeo-docs/dataadmin/pgGettingStarted/pgshapeloader.html).  At this point, it is very straightforward uploading your shapefiles from the data file into the database you just created.  Follow this guide if you received the OpenGeo distirbution in a timely manner.  Follow the instruction, but note that the SRID (Spatial Reference ID, or what defined the projection) will be **26918** for this lab.
+The great thing about OpeGeo is that they include a Graphical User Interface (GUI) for the shp2pgsql command line interface called [pgShapeLoader or shp2pgsql-gui](http://suite.opengeo.org/opengeo-docs/dataadmin/pgGettingStarted/pgshapeloader.html).  At this point, it is very straightforward uploading your shapefiles from the data file into the database you just created.  Follow this guide if you received the OpenGeo distirbution in a timely manner.  Follow the instructions, but note that the SRID (Spatial Reference ID, or what defined the projection) will be **26918** for this lab.
 
 ### shp2pgsql:
 
-If you do not have a GUI file loader, we can load files the old-fashioned way... the trusty command-line.  PostgreSQL's command line is normally called pgsql, but PostGIS extends GIS functions to shp2pgsql.  There are two way to load shapefiles into tables, one command at a time or batch loading.  This is tricky to lay out here because each system might as far as database names, passwords, port numbers, ect.  I will write the code with the following assumptions, but prepared to adjust if need be:
-* DBNAME is "nyc"
-* DBTABLE is the name of the shapefile minus the extension
-* SCHEMA is the default "public" one created when you install postgres
-* SRID will **ALWAYS** be defined as 26918 for this lab.
+If you do not have a GUI file loader, we can load files the old-fashioned way... the trusty command-line.  PostgreSQL's command line is normally called pgsql, but PostGIS extends GIS functions with the shp2pgsql command.  There are two ways to load shapefiles into tables, one command at a time or batch loading.  This is tricky to lay out here because each system may vary with database names, passwords, port numbers, ect.  I will write the code with the following assumptions, but be prepared to adjust if need be:
+* `<DBNAME>` is "nyc"
+* `<DBTABLE>` is the name of the shapefile minus the extension
+* `<SCHEMA>` is the default "public" one created when you install postgres
+* `<SRID>` will **ALWAYS** be defined as 26918 for this lab.
 * PORT # is 5432
-* FILE\PATH.shp **You have to denote you're own file paths where necessary!!**
+* `<FILE\PATH.shp>` **You have to denote you're own file paths where necessary!!**
 
-Reference this guide on PostGIS's Command-Line Interface: [shp2pgsql](http://suite.opengeo.org/opengeo-docs/dataadmin/pgGettingStarted/shp2pgsql.html) and if you have trouble, consult StackOverflow.
+Reference this guide on PostgreSQL Command-Line Interface for [shp2pgsql](http://suite.opengeo.org/opengeo-docs/dataadmin/pgGettingStarted/shp2pgsql.html) and if you have trouble, consult StackOverflow.
 
 #### Method 1
 Check that postgres is responsive or connected:
@@ -80,8 +81,10 @@ psql -U postgres -d nyc -c "SELECT count(*) FROM nyc_census_blocks"
 You could repeat this 4 or 5 times to create each table individually or we can write a script to load them all at once!
 
 #### Method 2: Batch Loading
-If you are a Windows user, you want to edit `loadfiles.cmd` (BATCH file) in the SQLscripts folder.  Save it and then run it.
-A MAC user will want to edit and run the `loadfiles.sh` (Bash file) in the same folder.
+If you named your database `nyc` then simply run the following files depending on you're OS.  If not, make the simple edit to the file.
+
+Windows user: run `loadfiles.cmd` (BATCH file) in the data folder.
+MAC user:  run the `loadfiles.sh` (Bash file) in the same folder.
 
 Take a look at the code as it uses regular expressions, pipe operators, and loops! 
 
