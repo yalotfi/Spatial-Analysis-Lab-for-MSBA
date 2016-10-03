@@ -38,6 +38,10 @@ With our new local server, let's create a new Database called `nyc`.
 
 ## Load Shapefiles
 
+### Run CREATE TABLE Scripts:
+
+Run each SQL script found in `lab-spatialDB-nyc/scriptsSQL/BatchLoad`.  You will find 6 sql scripts that create a table in the database called `nyc` for each dataset.  This is a laborious way to upload the data into the database, but it is best given that everyone is running different systems.  My insutrctions below are biased towards Windows users (insert PC Master Race joke here) and the bash shell script might not work for Mac users.  While the command prompt or bash terminal methods (explained below) are ideal, it is easier if everyone runs the same script.  I will go over this in class.
+
 ### OpenGeo's pgShapeLoader:
 
 The great thing about OpeGeo is that they include a Graphical User Interface (GUI) for the shp2pgsql command line interface called [pgShapeLoader or shp2pgsql-gui](http://suite.opengeo.org/opengeo-docs/dataadmin/pgGettingStarted/pgshapeloader.html).  At this point, it is very straightforward uploading your shapefiles from the data file into the database you just created.  Follow this guide if you received the OpenGeo distirbution in a timely manner.  Follow the instructions, but note that the SRID (Spatial Reference ID, or what defined the projection) will be **26918** for this lab.
@@ -89,6 +93,7 @@ You could repeat this 4 or 5 times to create each table individually or we can w
 If you named your database `nyc` then simply run the following files depending on you're OS.  If not, make the simple edit to the file.
 
 Windows user: run `loadfiles.cmd` (BATCH file) in the data folder.
+
 MAC user:  run the `loadfiles.sh` (Bash file) in the same folder.
 
 Take a look at the code as it uses regular expressions, pipe operators, and loops! 
