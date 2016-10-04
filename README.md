@@ -37,7 +37,9 @@ Once you have done this you can test to confirm PostGIS is responding to request
 
 where `<DBNAME>` is the name of the database you created.
 
+Once you have confirmed that PostGIS is responding you can go ahead and import your shapefiles.  Here I am importing Yaseen's shapefiles, which I have downloaded to my local folder.  Note the <SRID> Spatial Reference ID and that schema, which will be the name of your table.  The pipe indicates you are sending the output to psql with the username to the identified database.  See further specifics below, if you are interested in batch imports.
 
+`shp2pgsql -I -s 26918 /Users/tylerfrazier/GitHub/lab-spatialDB-nyc/data/nyc_census_blocks public.nyc_census_blocks | psql -U postgres -d nyc`
 
 ## Create a New DataBase
 
