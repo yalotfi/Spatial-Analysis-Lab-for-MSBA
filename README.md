@@ -25,6 +25,14 @@ There is a very simple PostgreSQL distribution for Mac OSX called [postgres.app]
 
 You will also be interested in installing a GUI tool that will assist with a variety of functions, including viewing your tables and executing scripts.  A very popular and widely used GUI is pgAdmin4.  Please go ahead and install it from [pgadmin](https://www.pgadmin.org/download/macos4.php).  Some other popular PostgreSQL GUI tools are Postico, PG Commander, and Induction, which you can find links to from the [postgress.app page] (http://postgresapp.com/documentation/gui-tools.html).
 
+Once you have installed postgres.app and pgadmin4, you can go into the pgadmin4 application and create a new server and database.  In the browser window, right click on server and add server (name it as you please).  Once you have done this, right click on your server and choose to create a new database.  After creating your database, use the plus button to expand the database and find the Extensions element, right click on it and choose Create Extension, and then add the postgis extension to your database.  Now your database should be ready to use.
+
+On a Mac, you may need to add the path to the postgresql application, in order to execute commands from the terminal.  To do this, go to your elephant in the menu bar and select 'about psql,' which will provide you with the version.  Then you will want to enter the PATH to the executable as a command in terminal by entering the following.
+
+'
+
+
+
 ## Create a New DataBase
 
 With our new local server, let's create a new Database called `nyc`.
