@@ -31,6 +31,12 @@ On a Mac, you may need to add the path to the postgresql application, in order t
 
 `PATH=/Applications/Postgres.app/Contents/Versions/9.5/bin/:$PATH`
 
+Once you have done this you can test to confirm PostGIS is responding to requests.
+
+`psql -U postgres -d <DBNAME> -c "SELECT postgis_version()"`
+
+where `<DBNAME>` is the name of the database you created.
+
 
 
 ## Create a New DataBase
