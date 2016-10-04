@@ -29,7 +29,7 @@ Once you have installed postgres.app and pgadmin4, you can go into the pgadmin4 
 
 On a Mac, you may need to add the path to the postgresql application, in order to execute commands from the terminal.  To do this, go to your elephant in the menu bar and select 'about psql,' which will provide you with the version.  Then you will want to enter the PATH to the executable as a command in terminal by entering the following.
 
-'
+'PATH=/Applications/Postgres.app/Contents/Versions/9.5/bin/:$PATH'
 
 
 
